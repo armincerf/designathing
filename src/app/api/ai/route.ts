@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const promptMessage = `Your job is to give school children in the uk aged 5-10 a prompt
 to get them to design or draw something. Format the prompt like this:
 
-'Design . for . with .'
+'Design {something} for {someone} with {conditions}'
 
 return only one sentance which must contain the words 'design' and 'for' and 'with'
 `;
