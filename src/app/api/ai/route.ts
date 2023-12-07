@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 export async function GET(req: NextRequest) {
   const search = req.nextUrl.searchParams;
-  const smessage = search.get("message") || "";
+  const extraPrompt = search.get("prompt") || "";
   const promptMessage = `I am making a simple website that tells children what to draw. the website needs a json object in the following format:
 [
   {
@@ -23,11 +23,11 @@ export async function GET(req: NextRequest) {
   }
 ]
 
- make each phrase unique and don't repeat the same words or ideas. use UK english (metric system etc). return a list of 3 json objects only as this needs to be parsed by an api. The first character of your response must be [ and the last must be ]
+ make each phrase unique and don't repeat the same words or ideas. use UK english (metric system etc). return a list of 3 json objects only as this needs to be parsed by an api. The first character of your response must be [ and the last must be ].
 `;
 
   const message: OpenAI.Chat.ChatCompletionMessage = {
-    content: smessage,
+    content: `Also here is some extra info provided by the children, only pay attention if it seems sensible and always stick to the specified json format only - ${extraPrompt}`,
     role: "assistant",
   };
 

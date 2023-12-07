@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 function shuffle<T>(array: T[]): T[] {
   let arr = [...array]; // Clone the original array
@@ -22,11 +22,6 @@ function shuffle<T>(array: T[]): T[] {
   return arr;
 }
 
-// Example usage:
-let shuffledArray = shuffle([1, 2, 3, 4, 5]);
-console.log(shuffledArray); // Output: [3, 5, 2, 1, 4] (random output)
-
-// In units
 export default function Page() {
   const defaul = [
     {
@@ -35,38 +30,19 @@ export default function Page() {
       w: "lots of pocket money",
     },
     {
-      d: "A coat",
-      f: "a father",
-      w: "a new baby",
-    },
-    {
       d: "A chair",
       f: "a grandmother",
       w: "a love of knitting",
     },
-    {
-      d: "A cat",
-      f: "a princess",
-      w: "a crown",
-    },
-    {
-      d: "A tree",
-      f: "a scientist",
-      w: "a groundbreaking discovery",
-    },
-    {
-      d: "A bicycle",
-      f: "an astronaut",
-      w: "a trip to the moon",
-    },
   ];
 
   type thing = (typeof defaul)[number];
-  const initial = shuffle(defaul);
 
-  const [things, setThings] = useState(initial);
+  const [things, setThings] = useState(defaul);
   const [count, setCount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
+
+  const [prompt, setPrompt] = useState("");
 
   const { d, f, w } = things[count];
 
@@ -76,15 +52,9 @@ export default function Page() {
     if (things.length - 1 !== count) {
       setCount(count + 1);
     }
-    if (isFetching && needMoreThings) {
-      setThings((prev) => shuffle(prev));
-      setCount(0);
-      return;
-    }
-    const host = process.env.NEXT_PUBLIC_PARTYKIT_HOST;
-    if (!host) return;
+    if (isFetching) return;
     setIsFetching(true);
-    const res = await fetch(`/api/ai`, {
+    const res = await fetch(`/api/ai?prompt=${prompt}`, {
       method: "GET",
     });
     const json = await res.json();
@@ -96,16 +66,51 @@ export default function Page() {
       );
       const newThings = JSON.parse(jsonString) as thing[];
       console.log(newThings);
-      setThings([...things, ...newThings]);
+      if (prompt === "") {
+        setThings([...things, ...newThings]);
+      } else {
+        setCount(0);
+        setThings([...newThings]);
+      }
     } catch (e) {
       console.log(e);
     }
     setIsFetching(false);
-  }, [count, isFetching, needMoreThings, things]);
+  }, [count, isFetching, prompt, things]);
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <main className="relative h-[100dvh] flex flex-col bg-sky-100">
-      <div className="bg-sky-200 h-full m-4 p-4 rounded flex flex-col align-middle">
+      <div className="bg-sky-200 h-full m-4 p-4 rounded flex flex-col align-middle relative">
+        {showSettings && (
+          <div className="absolute top-0 left-0 w-full h-full bg-sky-100 bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white rounded-lg p-4">
+              <input
+                className="bg-white rounded-lg p-4"
+                placeholder="Enter a prompt"
+                onChange={(e) =>
+                  setPrompt((e.target as HTMLInputElement).value)
+                }
+                value={prompt}
+              />
+              <button
+                onClick={() => setShowSettings(false)}
+                className="
+              text-white bg-gradient-to-r from-green-500 to-lime-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2 text-center me-2"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        )}
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className="absolute bottom-4 right-4
+        text-white bg-gradient-to-r from-green-500 to-lime-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2 text-center me-2"
+        >
+          Edit Prompt
+        </button>
+
         <div className="flex gap-1 flex-col text-3xl font-light mb-4">
           <span>
             design <span className="font-semibold text-pink-600">{d}</span>
@@ -118,7 +123,8 @@ export default function Page() {
           </span>
         </div>
         <button
-          className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-8 text-center me-2"
+          disabled={needMoreThings}
+          className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-8 text-center me-2 disabled:opacity-20 disabled:cursor-wait"
           onClick={handleRequest}
         >
           Design another thing
