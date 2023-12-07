@@ -4,30 +4,16 @@ import OpenAI from "openai";
 export async function GET(req: NextRequest) {
   const search = req.nextUrl.searchParams;
   const extraPrompt = search.get("prompt") || "";
-  const promptMessage = `I am making a simple website that tells children what to draw. the website needs a json object in the following format:
-[
-  {
-    "d": "A pencil case",
-    "f": "a wizard",
-    "w": "lots of pocket money"
-  },
-  {
-    "d": "A coat",
-    "f": "a father",
-    "w": "a new baby"
-  },
-  {
-    "d": "A chair",
-    "f": "a grandmother",
-    "w": "a love of knitting"
-  }
-]
+  const promptMessage = `Your job is to give school children in the uk aged 5-10 a prompt
+to get them to design or draw something. Format the prompt like this:
 
- make each phrase unique and don't repeat the same words or ideas. use UK english (metric system etc). return a list of 3 json objects only as this needs to be parsed by an api. The first character of your response must be [ and the last must be ].
+'Design . for . with .'
+
+return only one sentance which must contain the words 'design' and 'for' and 'with'
 `;
 
   const message: OpenAI.Chat.ChatCompletionMessage = {
-    content: `Also here is some extra info provided by the children, only pay attention if it seems sensible and always stick to the specified json format only - ${extraPrompt}`,
+    content: `Use this extra info to build the sentance - ${extraPrompt}`,
     role: "assistant",
   };
 

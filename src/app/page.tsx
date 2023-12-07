@@ -22,36 +22,40 @@ function shuffle<T>(array: T[]): T[] {
   return arr;
 }
 
+type thing = {
+  d: string;
+  f: string;
+  w: string;
+};
+
+function stringToThing(string: string): thing {
+  const str = string.toLowerCase().trim().replaceAll("'", "");
+  const designStart = str.indexOf("design") + 7;
+  const forStart = str.indexOf("for");
+  const withStart = str.includes("with")
+    ? str.indexOf("with")
+    : str.indexOf("using");
+
+  const d = str.slice(designStart, forStart).trim();
+  const f = str.slice(forStart + 4, withStart).trim();
+  const w = str.slice(withStart + 5).trim();
+
+  return { d, f, w };
+}
+
 export default function Page() {
-  const defaul = [
-    {
-      d: "A pencil case",
-      f: "a wizard",
-      w: "lots of pocket money",
-    },
-    {
-      d: "A chair",
-      f: "a grandmother",
-      w: "a love of knitting",
-    },
-  ];
+  const defaul = "design a thing for a guy with a gun";
 
-  type thing = (typeof defaul)[number];
-
-  const [things, setThings] = useState(defaul);
-  const [count, setCount] = useState(0);
+  const [thingPrompt, setThingPrompt] = useState(defaul);
   const [isFetching, setIsFetching] = useState(false);
 
   const [prompt, setPrompt] = useState("");
 
-  const { d, f, w } = things[count];
+  const thing = stringToThing(thingPrompt);
 
-  const needMoreThings = things.length - 1 === count;
+  const { d, f, w } = thing;
 
   const handleRequest = useCallback(async () => {
-    if (things.length - 1 !== count) {
-      setCount(count + 1);
-    }
     if (isFetching) return;
     setIsFetching(true);
     const res = await fetch(`/api/ai?prompt=${prompt}`, {
@@ -60,23 +64,12 @@ export default function Page() {
     const json = await res.json();
     try {
       const aiResponse = json.choices[0].message.content as string;
-      const jsonString = aiResponse.substring(
-        aiResponse.indexOf("["),
-        aiResponse.lastIndexOf("]") + 1,
-      );
-      const newThings = JSON.parse(jsonString) as thing[];
-      console.log(newThings);
-      if (prompt === "") {
-        setThings([...things, ...newThings]);
-      } else {
-        setCount(0);
-        setThings([...newThings]);
-      }
+      setThingPrompt(aiResponse);
     } catch (e) {
       console.log(e);
     }
     setIsFetching(false);
-  }, [count, isFetching, prompt, things]);
+  }, [isFetching, prompt]);
   const [showSettings, setShowSettings] = useState(false);
 
   return (
@@ -123,7 +116,7 @@ export default function Page() {
           </span>
         </div>
         <button
-          disabled={needMoreThings}
+          disabled={isFetching}
           className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-8 text-center me-2 disabled:opacity-20 disabled:cursor-wait"
           onClick={handleRequest}
         >
