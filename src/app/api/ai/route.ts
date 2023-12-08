@@ -4,7 +4,8 @@ import OpenAI from "openai";
 export async function GET(req: NextRequest) {
   const search = req.nextUrl.searchParams;
   const extraPrompt = search.get("prompt") || "";
-  const promptMessage = `Your job is to give school children in the uk aged 5-10 a prompt
+  const prevIdeas = search.get("history");
+  const promptMessage = `Your job is to give school children in the uk aged 5 years old a prompt
 to get them to design or draw something. Format the prompt like this:
 
 'Design {something} for {someone} with {conditions}'
@@ -12,8 +13,16 @@ to get them to design or draw something. Format the prompt like this:
 return only one sentance which must contain the words 'design' and 'for' and 'with'
 `;
 
+  const historyMessage = prevIdeas
+    ? `These are previous suggestions, make sure you don't repeat any ideas from these: ${prevIdeas} `
+    : "";
+
   const message: OpenAI.Chat.ChatCompletionMessage = {
-    content: `Use this extra info to build the sentance - ${extraPrompt}`,
+    content:
+      historyMessage +
+      (extraPrompt
+        ? ` and use this extra info to build the sentance - ${extraPrompt}`
+        : ""),
     role: "assistant",
   };
 

@@ -47,6 +47,7 @@ export default function Page() {
     [aiMode, pathname, router],
   );
   const [search, setSearch] = useState("");
+  const [thingHistory, setThingHistory] = useState<string[]>([]);
   const setAiMode = useCallback(
     (value: boolean) => {
       router.push(`${pathname}?prompt=${search}&ai=${value}`);
@@ -67,18 +68,22 @@ export default function Page() {
     }
     if (isFetching) return;
     setIsFetching(true);
-    const res = await fetch(`/api/ai?${prompt}`, {
-      method: "GET",
-    });
+    const res = await fetch(
+      `/api/ai?${prompt}&history=${JSON.stringify(thingHistory)}`,
+      {
+        method: "GET",
+      },
+    );
     const json = await res.json();
     try {
       const aiResponse = json.choices[0].message.content as string;
       setThingPrompt(aiResponse);
+      setThingHistory([...thingHistory, aiResponse]);
     } catch (e) {
       console.log(e);
     }
     setIsFetching(false);
-  }, [aiMode, isFetching, prompt]);
+  }, [aiMode, isFetching, prompt, thingHistory]);
   const [showSettings, setShowSettings] = useState(false);
 
   return (
