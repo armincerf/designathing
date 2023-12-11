@@ -85,10 +85,77 @@ export default function Page() {
     setIsFetching(false);
   }, [aiMode, isFetching, prompt, thingHistory]);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   return (
-    <main className="relative h-[100dvh] flex flex-col bg-sky-100">
+    <main
+      onClick={() => {
+        setShowAbout(false);
+        setShowSettings(false);
+      }}
+      className="relative h-[100dvh] flex flex-col bg-sky-100"
+    >
       <div className="bg-sky-200 h-full m-4 p-4 rounded flex flex-col align-middle relative">
+        {showAbout && (
+          <div className="absolute top-0 left-0 w-full h-full bg-sky-100 bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white rounded-lg p-4 flex flex-col w-3/4">
+              <div className="p-4">
+                <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
+                <p className="mb-4">Last updated: December 11, 2023</p>
+                <h2 className="text-2xl font-semibold mb-2">1. Introduction</h2>
+                <p className="mb-4">
+                  Welcome to {'"Design a Thing"'}, a word game specifically
+                  developed for St. Helen{"'"}s Primary School. We value the
+                  privacy of our users and are devoted to safeguarding their
+                  personal information. Our service does not gather or use any
+                  personal data from its users.
+                </p>
+                <h2 className="text-2xl font-semibold mb-2">
+                  2. Information We Don’t Collect
+                </h2>
+                <p className="mb-2">
+                  Our website does not collect any personal or usage data. We do
+                  not require nor store any identifiable information such as:
+                </p>
+                <ul className="list-disc ml-5 mb-4">
+                  <li className="mb-1">
+                    Personal identifiable information (e.g., names, addresses,
+                    email addresses, phone numbers)
+                  </li>
+                  <li className="mb-1">
+                    Device and browser information (e.g., IP addresses, device
+                    types, cookies)
+                  </li>
+                  <li>Usage data (e.g., game history, scores)</li>
+                </ul>
+                <p className="mb-4">
+                  Our website{"'"}s sole purpose is to deliver a secure and
+                  enjoyable learning environment for St. Helen{"'"}s Primary
+                  School children.
+                </p>
+                <h2 className="text-2xl font-semibold mb-2">
+                  3. No Third-Party Websites or Content
+                </h2>
+                <p className="mb-4">
+                  There are no links to third-party websites or content present
+                  on our website. As such, this privacy policy governs all
+                  aspects of our site exclusively.
+                </p>
+                <h2 className="text-2xl font-semibold mb-2">
+                  4. No Changes To The Website{"'"}s Content
+                </h2>
+                <p className="mb-4">
+                  The content of the {'"Design a Thing"'} game, once launched,
+                  will remain the same. Therefore, no changes to this privacy
+                  policy are foreseen.
+                </p>{" "}
+                <p className="mt-8 text-center">
+                  Created by Tara Davis for use at St Helen{"'"}s Primary School
+                </p>
+              </div>{" "}
+            </div>
+          </div>
+        )}
         {showSettings && (
           <div className="absolute top-0 left-0 w-full h-full bg-sky-100 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white rounded-lg p-4 flex flex-col w-3/4">
@@ -134,7 +201,20 @@ export default function Page() {
           </div>
         )}
         <button
-          onClick={() => setShowSettings(!showSettings)}
+          onClick={(e) => {
+            e.stopPropagation();
+            return setShowAbout(!showAbout);
+          }}
+          className="absolute bottom-4 left-4
+        text-white bg-gradient-to-r from-green-500 to-lime-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-full text-sm px-4 py-2 text-center"
+        >
+          ?
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            return setShowSettings(!showSettings);
+          }}
           className="absolute bottom-4 right-4
         text-white bg-gradient-to-r from-green-500 to-lime-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2 text-center me-2"
         >
