@@ -163,8 +163,8 @@ export default function Page() {
                 <button
                   onClick={() => setAiMode(true)}
                   className={`${aiMode
-                      ? "bg-gradient-to-r from-green-500 to-lime-500"
-                      : "bg-gray-200"
+                    ? "bg-gradient-to-r from-green-500 to-lime-500"
+                    : "bg-gray-200"
                     } text-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2 text-center me-2`}
                 >
                   Ai
@@ -172,8 +172,8 @@ export default function Page() {
                 <button
                   onClick={() => setAiMode(false)}
                   className={`${!aiMode
-                      ? "bg-gradient-to-r from-green-500 to-lime-500"
-                      : "bg-gray-200"
+                    ? "bg-gradient-to-r from-green-500 to-lime-500"
+                    : "bg-gray-200"
                     } text-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2 text-center me-2`}
                 >
                   Manual
@@ -184,7 +184,10 @@ export default function Page() {
                 className="bg-white rounded-lg p-4 mb-2"
                 placeholder="Enter a prompt, theme, or write some examples to use"
                 rows={12}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setSearch(e.target.value);
+                }}
                 value={search ?? ""}
               />
               <button
