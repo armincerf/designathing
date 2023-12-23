@@ -91,7 +91,6 @@ export default function Page() {
     <main
       onClick={() => {
         setShowAbout(false);
-        setShowSettings(false);
       }}
       className="relative h-[100dvh] flex flex-col bg-sky-100"
     >
